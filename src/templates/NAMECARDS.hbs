@@ -1,0 +1,173 @@
+Hi {{customerName}},
+
+<p> {{{body}}}</p>
+
+<p><strong>1) Artwork</strong></p>
+<div style="margin:0px 0px 0px 40px;border:none;padding:0px">
+  <p>
+    We will be printing according to the artwork(s) attached.<br>
+    Please double-check to ensure that they are correct.
+  </p>
+
+  <div style="color:blue;"> - Size : 88mm X 54mm, straight corners</div>
+  <div style="color:blue;"> - Material : 300gsm Rough Matte Extra-white Art card OR 300gsm Smooth Matte + Matte Printing,</div>
+  <div style="color:#008000; font-weight:bold;"> - Final artwork : Front.jpg, Back.jpg</div>
+</div>
+
+<!-- 2) Price -->
+<p><strong>2) Price</strong></p>
+<div style="margin:0px 0px 0px 40px;border:none;padding:0px">
+  <div style="font-weight:bold;"><u>
+    {{namesSummary}} Business cards : {{DS}}
+  </u></div>
+
+  <div>- Front : {{money front}}</div>
+
+  {{#if back}}
+    <div>- Back : {{money back}}</div>
+  {{/if}}
+
+  {{#if courier}}
+    <div>Courier and handling charge : {{money courierPrice}}</div>
+  {{/if}}
+
+  <p style="margin:6px 0; font-family:monospace; line-height:1;">
+    ===================================
+  </p>
+  {{!-- Total: front + (back if present) + (courier if present) --}}
+  <div style="font-weight:bold;">
+    Total costs :
+    <u>{{#if courier}}
+      {{money total}} (Courier inclusive)
+    {{else}}
+      {{money total}}
+    {{/if}}
+  </u></div>
+  <p style="margin:6px 0; font-family:monospace; line-height:1;">
+    ===================================
+  </p>
+</div>
+
+<p><strong>3) Mode of payment - Please Choose:</strong></p>
+
+<ul style="margin:0px 0px 0px 40px;border:none;padding:0px">
+  <li style="margin-bottom:12px;">
+    <span style="text-decoration:underline; color:#000000;">Pre-payment via Internet Banking or ATM</span>
+    <div style="margin-top:8px; margin-left:16px; line-height:1.5;">
+      Bank / Branch: DBS Bank Telepark Branch<br>
+      Account Name: Leung Ping Graphic &amp; Printing<br>
+      Account Number: 106-901101-9 (DBS Current Account)
+    </div>
+  </li>
+
+  <li style="margin-bottom:12px;">PayNow (UEN) : 52812097BDBS</li>
+  <li>PayLah : Please find QR Code attached</li>
+</ul>
+<br>
+<p style="margin:0px 0px 0px 40px;border:none;padding:0px;color:#ff0000;">
+  Printing takes <span style="font-weight:bold;">24 hours</span> (excluding weekends and PH) upon receipt of payment, unless otherwise stated or agreed upon.
+</p>
+
+
+{{#if courier}}
+<p><strong>4) Mode of delivery : Courier</strong></p>
+  <div style="margin:0px 0px 0px 40px;border:none;padding:0px">
+    <div style="margin-top: 15px; font-size: 16px; color:#9900ff; line-height: 1.2;">
+      <div style="font-weight: bold;">
+        Deliver to : {{AddressName}}<br style="line-height:1" />
+        Attention : {{customerName}} ({{customerNumber}})
+      </div>
+      <div style="line-height: 1;">
+        {{AddressStreet}}<br style="line-height:1" />
+        {{AddressUnit}}, Singapore {{AddressPostalCode}}
+      </div>
+    </div>
+  </div>
+{{else}}
+</p><strong>4) Mode of collection : Self-collection</strong></p>
+  <div style="margin:0px 0px 0px 40px;border:none;padding:0px">
+    <a href="https://www.google.com/maps/place/Leung+Ping+Graphic+%26+Printing+(OneDayPrint)/@1.3582599,103.9505523,20.75z/data=!3m1!5s0x31da3d05e79189a7:0xcd9344e08c47d52d!4m15!1m8!3m7!1s0x31da3d05e7ed2baf:0xf84d1afeeba9e67!2s445+Tampines+Street+42,+%2301-08,+Singapore+520445!3b1!8m2!3d1.3582051!4d103.9505998!16s%2Fg%2F11qpyq5jkl!3m5!1s0x31da3d05dd9c8dcf:0xc460d5752d203e8c!8m2!3d1.358237!4d103.950657!16s%2Fg%2F11g__w33_?entry=ttu&g_ep=EgoyMDI1MTEwNC4xIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer"
+    style="color:#000000 !important; text-decoration:none !important; border-bottom:none; outline:0;">
+    Address : 445 Tampines Street 42 #01-08 S(520445) </a> <br>
+    Business hours : Mon to Sat, 9:30am to 7:00pm  |  6788 2039
+  </div>
+{{/if}}
+
+<p><strong>5) Confirmation of order</strong></p>
+<div style="margin:0px 0px 0px 40px;border:none;padding:0px">
+  <p style="font-weight:normal !important;">
+    If all of the above details are correct, kindly proceed to make payment and finalise your order by quoting:
+  </p>
+  <p style="margin:6px 0 10px 0;">
+    “
+    <span style="color:rgb(255, 0, 0); font-weight:bold">
+      I confirm this order and have transferred the payment amount of
+      <span
+        style="
+          display:inline-block;
+          color:#000000; 
+          font-weight:700;              /* bold only the amount */
+        "><u>
+        S{{money total}} {{#if courier}}(Courier inclusive){{/if}}
+      </u></span>
+      to Onedayprint's DBS / PayNow / PayLah * bank account
+    </span>
+    ” <span style="font-weight:normal !important;color:#000">and e-mail it to us.</span>
+  </p>
+  <p style="margin:0; font-weight:normal !important;">The above response must be sent together with this email.</p>
+</div>
+<br>
+<br>
+
+<!-- ODP signature (table-based, inline styles for email clients) -->
+<div style="font-family: Serif; color:#000; line-height:1.35;">
+
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+    <tr>
+      <td valign="top" style="padding:0 12px 0 0;">
+        <div style="font-size:14px; line-height:1.4; margin:0 0 6px;">
+          Warmest Regards,<br>
+          <span style="font-weight:bold;">{{staffName}}</span>
+        </div>
+        <!-- Row with logo (left) and social icons (right) -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+          <tr>
+            <!-- Logo -->
+            <td valign="middle" style="padding:0; white-space:nowrap;">
+              <img src="/images/odp-image.gif"
+                  width="126" height = "23" alt="OneDayPrint"
+                  style="display:block; border:0; height:auto; margin-top:-10px;">
+            </td>
+
+            <!-- gap -->
+            <td style="width:8px; font-size:0; line-height:0;">&nbsp;</td>
+
+            <!-- Icons -->
+            <td valign="middle" style="padding:0;">
+              <a href="https://www.facebook.com/onedayprint" target="_blank" rel="noopener noreferrer"
+                style="display:inline-block; text-decoration:none;">
+                <img src="/images/unnamedfacebook.jpg"
+                    width="20" height="20" top="-23" alt="Facebook"
+                    style="display:block; border:0;">
+              </a>
+              <a href="https://www.instagram.com/onedayprintsg/" target="_blank" rel="noopener noreferrer"
+                style="display:inline-block; text-decoration:none;">
+                <img src="/images/unnamed.jpg"
+                    width="20" height="20" top="-23" alt="Instagram"
+                    style="display:block; border:0;">
+              </a>
+            </td>
+          </tr>
+        </table>
+      </td>
+
+      <td valign="top" style="width:1px; background:#999;"></td>
+
+      <td valign="top" style="padding:0 0 0 12px; font-size:13px;">
+        <div>445 Tampines St 42, #01-08, S(520445)</div>
+        <div>Mon to Sat 9:30am to 7:00pm | <a href="tel:+6567882039" style="color:#000; text-decoration:none;">6788 2039</a></div>
+        <div>Strictly no walk-in orders until further notice</div>
+      </td>
+    </tr>
+  </table>
+</div>

@@ -1,0 +1,177 @@
+Hi {{customerName}},
+
+<p> {{{body}}}</p>
+
+<p><strong>1) Quotation :</strong></p>
+
+<!-- Details -->
+<div style="margin:0px 0px 0px 40px;border:none;padding:0px">
+  <ul style="margin:0 0 8px 0px; padding:0; list-style:none; line-height:1.35;color:#0000ff;">
+  <li>- Size : 88mm X 54mm, straight corners</li>
+  <li>- Material : 300gsm Rough Matte Extra-white Art card <span style="color:#ff0000">OR</span> 300gsm Smooth Matte + Matte Printing,</li>
+  </ul>
+
+  <div style="color:#ff0000; font-weight:bold;">OR</div>
+
+  <div style="color:#0000ff; font-weight:bold;">Premium paper (+$5/100pcs) :</div>
+  <ul style="margin:0 0 14px 0px; padding:0; list-style:none; line-height:1.35;color:#0000ff;">
+  <li>250gsm Linen Paper</li>
+  <li>290gsm Majestic Marble Digital White</li>
+  <li>290gsm Majestic Candlelight Digital Cream</li>
+  <li>250gsm Majestic Luxus Real Digital Silver</li>
+  <li>250gsm Majestic Luxus Real Digital Gold</li>
+  </ul>
+
+  <div style="font-weight:bold;"><u>
+    {{namesSummary}} Business cards : {{DS}}
+  </u></div>
+
+  <div>- Front : {{money front}}</div>
+
+  {{#if back}}
+    <div>- Back : {{money back}}</div>
+  {{/if}}
+
+  {{#if courier}}
+    <div style="margin-top:4px;">Courier and handling charge : {{money courier}}</div>
+  {{/if}}
+
+  <p style="margin:6px 0; font-family:monospace; line-height:1;">
+    ===================================
+  </p>
+  {{!-- Total: front + (back if present) + (courier if present) --}}
+  <div style="font-weight:bold;">
+    Total costs :
+    <u>
+      {{#if courier}}
+        {{money (sum total courier)}} (Courier inclusive)
+      {{else}}
+        {{money total}}
+      {{/if}}
+    </u>
+  </div>
+  <p style="margin:6px 0; font-family:monospace; line-height:1;">
+    ===================================
+  </p>
+</div>
+
+<!-- 2 artwork -->
+<p><strong>2) Artwork :</strong></p>
+<p style="margin:0px 0px 0px 40px;border:none;padding:0px">
+  <strong>To proceed, kindly send us your artwork(s)</strong> in either <strong>PSD, PDF, AI</strong> or <strong>JPG</strong> format
+  with at least <strong>300dpi</strong> resolution (ideally 400dpi).
+</p>
+<br>
+<div style="margin:0px 0px 0px 40px;border:none;padding:0px">
+  If you do not have a print-ready artwork yet, we highly recommend using
+  <a href="https://www.canva.com" target="_blank" rel="noopener noreferrer" style="color:#0b57d0; text-decoration:underline;">Canva.com</a><br>
+  Canva is a free mobile/web app which takes ~30 mins to learn, and you can choose from thousands of professional pre-made templates! ✨<br>
+  When saving your Canva artwork, please select <em>‘PDF print’</em> format and tick the <em>‘Crop marks and bleed’</em> checkbox.
+</div>
+<br>
+
+<!-- 3 -->
+<p><strong>3) Lead time :</strong></p>
+<div style="margin:0px 0px 0px 40px;border:none;padding:0px">
+  <div style="margin:3px 0;color:#0000ff;">
+    Printing takes <span style="font-weight:bold;">up to 24 hours (excluding weekends and PH)</span>
+    upon confirmation of artwork(s) and receipt of payment.
+  </div>
+
+  <div style="margin:8px 0 4px 0;">Once your order is ready, you may choose either :</div>
+  <div style="margin:3px 0;">
+    i) <strong>Self-collection</strong> at our shop
+    (<a href="https://maps.google.com/?q=445%20Tampines%20St%2042%2C%20%2301-08%2C%20S%28520445%29"
+        target="_blank" rel="noopener noreferrer" style="color:#9900ff; text-decoration:underline;">
+        445 Tampines St 42, #01-08, S(520445)</a><span style= "color:#9900ff"> | Mon to Sat 9:30am to 7:00pm)</span>, or
+  </div>
+  <div style="margin:3px 0;">
+    ii) After 24 hours printing is completed, <strong>delivery</strong>
+    (<span style="color:#000000;"><strong>+$10 to $15</strong></span>) right to your door, before 6pm on the next working day
+  </div>
+  <div style="margin:3px 0; color:#ff0000;">
+    i.e. Order on Mon = Complete on Tue = Deliver on Wed before 6pm
+  </div>
+</div>
+<br>
+
+<!-- Delivery rates -->
+<div style="margin:0px 0px 0px 40px;border:none;padding:0px"><strong>Delivery rates :</strong> Please match the first 2 digits of your postal code to the list below :
+  <div style="margin:2px 0;"><strong>
+    <span style="color:#f08c1e;">01 to 10 : $12</span>
+    &nbsp;|&nbsp;
+    <span style="color:#f08c1e;">56 to 59 : $12</span>
+  </div>
+  <div style="margin:2px 0;">
+    <span style="color:#0000ff;">11 to 13 : $15</span>
+    &nbsp;|&nbsp;
+    <span style="color:#0000ff;">60 to 73 : $15</span>
+  </div>
+  <div style="margin:2px 0;">
+    <span style="color:#f08c1e;">14 to 33 : $12</span>
+    &nbsp;|&nbsp;
+    <span style="color:#f08c1e;">75 to 80 : $12</span>
+  </div>
+  <div style="margin:2px 0;">
+    <span style="color:#1b9a14;">34 to 55 : $10</span>
+    &nbsp;|&nbsp;
+    <span style="color:#1b9a14;">81 to 82 : $10</span>
+  </div>
+  <div style="margin:4px 0 0 0;">
+    <span style="color:#f08c1e;">Sentosa, Tuas &amp; Jurong Island : $25</span>
+  </div></strong>
+</div>
+<br>
+<br>
+<!-- ODP signature (table-based, inline styles for email clients) -->
+<div style="font-family: Serif; color:#000; line-height:1.35;">
+
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+    <tr>
+      <td valign="top" style="padding:0 12px 0 0;">
+        <div style="font-size:14px; line-height:1.4; margin:0 0 6px;">
+          Warmest Regards,<br>
+          <span style="font-weight:bold;">{{staffName}}</span>
+        </div>
+        <!-- Row with logo (left) and social icons (right) -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+          <tr>
+            <!-- Logo -->
+            <td valign="middle" style="padding:0; white-space:nowrap;">
+              <img src="/images/odp-image.gif"
+                  width="126" height = "23" alt="OneDayPrint"
+                  style="display:block; border:0; height:auto; margin-top:-10px;">
+            </td>
+
+            <!-- gap -->
+            <td style="width:8px; font-size:0; line-height:0;">&nbsp;</td>
+
+            <!-- Icons -->
+            <td valign="middle" style="padding:0;">
+              <a href="https://www.facebook.com/onedayprint" target="_blank" rel="noopener noreferrer"
+                style="display:inline-block; text-decoration:none;">
+                <img src="/images/unnamedfacebook.jpg"
+                    width="20" height="20" top="-23" alt="Facebook"
+                    style="display:block; border:0;">
+              </a>
+              <a href="https://www.instagram.com/onedayprintsg/" target="_blank" rel="noopener noreferrer"
+                style="display:inline-block; text-decoration:none;">
+                <img src="/images/unnamed.jpg"
+                    width="20" height="20" top="-23" alt="Instagram"
+                    style="display:block; border:0;">
+              </a>
+            </td>
+          </tr>
+        </table>
+      </td>
+
+      <td valign="top" style="width:1px; background:#999;"></td>
+
+      <td valign="top" style="padding:0 0 0 12px; font-size:13px;">
+        <div>445 Tampines St 42, #01-08, S(520445)</div>
+        <div>Mon to Sat 9:30am to 7:00pm | <a href="tel:+6567882039" style="color:#000; text-decoration:none;">6788 2039</a></div>
+        <div>Strictly no walk-in orders until further notice</div>
+      </td>
+    </tr>
+  </table>
+</div>
