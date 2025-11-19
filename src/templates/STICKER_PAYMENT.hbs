@@ -1,0 +1,229 @@
+Hi {{customerName}},
+
+<p> {{{body}}}</p>
+
+<p><strong>1) Artwork</strong></p>
+<div style="margin:0px 0px 0px 40px;border:none;padding:0px">
+  <p>
+    We will be printing according to the artwork(s) attached.<br>
+    Please double-check to ensure that they are correct.
+  </p>
+
+  <!-- Render each item’s spec + line total -->
+  {{#each quotes}}
+    <p>
+      {{!-- <strong> <b>Quantity:</b> {{quantityDisplay}} 
+      ({{designCount}} {{#if (eq designCount 1)}}design{{else}}designs{{/if}} • {{totalQty}} pcs total)</strong> :<br> --}}
+      <span style=" display:inline-block; color:#000000; font-weight: bold; "> <u> {{quantityDisplay}}pcs {{ShapeNice}}stickers: </u> </span><br>
+      <span style="color:blue;"> - Material : {{material}}</span><br>
+      <span style="color:blue;"> - Shape : </span><span style="color:blue; font-weight:bold;">{{shapeNice}}</span><br>
+      <span style="color:blue;"> - Size : </span><span style="color:blue; font-weight:bold;">{{sizeNice}}</span><br>
+      <span style="color:blue;"> - Kiss-cut on {{kissCutOn}} sheets</span><br>
+      <span style="color:blue;">{{#if breakdown.individualCut}} - Additional individual-cut{{/if}}</span>
+      <span style="color:blue;">{{#if breakdown.dieCut}} - Additional Die-cut{{/if}}</span>
+      <br>
+      <span style="color:#008000;font-weight:bold;">- Final Artwork : </span>
+      <span style="color:#008000;font-weight:bold;">
+        {{~#if isMulti~}}
+          {{~#each designs~}}
+            {{../baseName}}{{this}}.jpg
+            {{#unless @last}}
+              <br><span style="display:inline-block; width:13ch;"></span>
+            {{/unless}}
+          {{~/each~}}
+        {{~else~}}
+          {{~baseName}}.jpg
+        {{~/if~}}
+      </span>
+    </p>
+</div>
+
+<div style="margin:0px 0px 0px 40px;border:none;padding:0px">
+  <p style="margin:0;">
+    Processing fee {{money processingFee}}
+    {{#if extraProcessingCount}} + {{money subsequentProcessing}} X {{extraProcessingCount}}{{/if}}
+    {{#if breakdown.surchargeApplied}} + additional $10 surcharge for items &lt; $35 {{/if}}
+    + (${{breakdown.unitPriceFinalNoCutIncluded}}/pcs X {{quantity}} pcs)
+    = {{money breakdown.totalnoCutIncluded}}
+  </p>
+
+  {{!-- White Ink underlay line (pink) --}}
+  {{#if breakdown.whiteInk.apply}}
+    <p style="color:#ff00ff;margin:0;">
+      White Ink Underlay charges:
+      {{money breakdown.whiteInk.processingFee}}
+      + (${{ breakdown.whiteInk.unitHalf}}/pcs × {{breakdown.whiteInk.qty}} pcs)
+      = {{money breakdown.whiteInk.totalWhiteInk}}
+    </p>
+  {{/if}}
+
+  <!-- Optional: show per-piece add-ons if enabled -->
+  {{#if breakdown.individualCut}}
+    <p style="margin:0;">
+      Individual-cut: $0.20 × {{quantity}} = {{money individualCutCost}}
+    </p>
+  {{/if}}
+  {{#if breakdown.dieCut}}
+    <p style="margin:0;">
+      Die-cut: $0.25 × {{quantity}} = {{money dieCutCost}}
+    </p>
+  {{/if}}
+  {{/each}}
+
+
+  <p><strong>2) Price</strong></p>
+  {{#if courier}}
+    <p style="margin:0 0 6px 0; color:blue;">
+      Courier and handling charge : {{money courierPrice}}
+    </p>
+
+    <p style="margin:6px 0; font-family:monospace; line-height:1;">
+      ===================================
+    </p>
+
+    <p style="margin:0 0 6px 0;">
+      Total costs : <span style="color:blue; font-weight:bold;">S{{money courierTotal}} (Courier inclusive)</span>
+    </p>
+
+    <p style="margin:6px 0; font-family:monospace; line-height:1;">
+      ===================================
+    </p>
+  {{else}}
+    <p style="margin:6px 0; font-family:monospace; line-height:1;">
+      ====================
+    </p>
+
+    <p style="margin:0 0 6px 0;">
+      Total costs : <span style="color:blue; font-weight:bold;">S{{money total}}</span>
+    </p>
+
+    <p style="margin:6px 0; font-family:monospace; line-height:1;">
+      ====================
+    </p>
+  {{/if}}
+</div>
+
+<p><strong>3) Mode of payment - Please Choose:</strong></p>
+<div style="margin:0px 0px 0px 40px;border:none;padding:0px">
+  <ul style="margin:0 0 16px 20px; padding:0;">
+    <li style="margin-bottom:12px;">
+      <span style="text-decoration:underline; color:#000000;">Pre-payment via Internet Banking or ATM</span>
+      <div style="margin-top:8px; margin-left:16px; line-height:1.5;">
+        Bank / Branch: DBS Bank Telepark Branch<br>
+        Account Name: Leung Ping Graphic &amp; Printing<br>
+        Account Number: 106-901101-9 (DBS Current Account)
+      </div>
+    </li>
+
+    <li style="margin-bottom:12px;">PayNow (UEN) : 52812097BDBS</li>
+    <li>PayLah : Please find QR Code attached</li>
+  </ul>
+</div>
+<p style="margin:8px 0 0 0; color:red;">
+  Printing takes <span style="font-weight:bold;">24 hours</span> (excluding weekends and PH) upon receipt of payment, unless otherwise stated or agreed upon.
+<br>
+
+{{#if courier}}
+<p><strong>4) Mode of delivery : Courier</strong></p>
+  <div style="margin:0px 0px 0px 40px;border:none;padding:0px">
+    <div style="margin-top: 15px; font-size: 16px; color:#9900ff; line-height: 1.2;">
+      <div style="font-weight: bold;">
+        Deliver to : {{AddressName}}<br style="line-height:1" />
+        Attention : {{customerName}} ({{customerNumber}})
+      </div>
+      <div style="line-height: 1;">
+        {{AddressStreet}}<br style="line-height:1" />
+        {{AddressUnit}}, Singapore {{AddressPostalCode}}
+      </div>
+    </div>
+  </div>
+{{else}}
+</p><strong>4) Mode of collection : Self-collection</strong></p>
+  <div style="margin:0px 0px 0px 40px;border:none;padding:0px">
+    <a href="https://www.google.com/maps/place/Leung+Ping+Graphic+%26+Printing+(OneDayPrint)/@1.3582599,103.9505523,20.75z/data=!3m1!5s0x31da3d05e79189a7:0xcd9344e08c47d52d!4m15!1m8!3m7!1s0x31da3d05e7ed2baf:0xf84d1afeeba9e67!2s445+Tampines+Street+42,+%2301-08,+Singapore+520445!3b1!8m2!3d1.3582051!4d103.9505998!16s%2Fg%2F11qpyq5jkl!3m5!1s0x31da3d05dd9c8dcf:0xc460d5752d203e8c!8m2!3d1.358237!4d103.950657!16s%2Fg%2F11g__w33_?entry=ttu&g_ep=EgoyMDI1MTEwNC4xIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer"
+    style="color:#000000 !important; text-decoration:none !important; border-bottom:none; outline:0;">
+    Address : 445 Tampines Street 42 #01-08 S(520445) </a> <br>
+    Business hours : Mon to Sat, 9:30am to 7:00pm  |  6788 2039
+  </div>
+{{/if}}
+
+<p><strong>5) Confirmation of order</strong></p>
+<div style="margin:0px 0px 0px 40px;border:none;padding:0px">
+  <p style="margin:0 0 8px 0; font-weight:normal !important;">
+    If all of the above details are correct, kindly proceed to make payment and finalise your order by quoting:
+  </p>
+  <p style="margin:6px 0 10px 0;">
+    “
+    <span style="color:rgb(255, 0, 0); font-weight:bold">
+      I confirm this order and have transferred the payment amount of
+      <span
+        style="
+          display:inline-block;
+          color:#000000; 
+          font-weight:700;              /* bold only the amount */
+        "><u>
+        S{{#if courier}}{{money courierTotal}}{{else}}{{money total}}{{/if}}
+      </u></span>
+      {{#if courier}}
+        <span style="color:#00f; font-weight:700;"> (Courier inclusive)</span>
+      {{/if}}
+      to Onedayprint's DBS / PayNow / PayLah * bank account
+    </span>
+    ” <span style="font-weight:normal !important;color:#000">and e-mail it to us.</span>
+  </p>
+  <p style="margin:0; font-weight:normal !important;">The above response must be sent together with this email.</p>
+</div>
+<br>
+<br>
+<!-- ODP signature (table-based, inline styles for email clients) -->
+<div style="font-family: Serif; color:#000; line-height:1.35;">
+
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+    <tr>
+      <td valign="top" style="padding:0 12px 0 0;">
+        <div style="font-size:14px; line-height:1.4; margin:0 0 6px;">
+          Warmest Regards,<br>
+          <span style="font-weight:bold;">{{staffName}}</span>
+        </div>
+        <!-- Row with logo (left) and social icons (right) -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+          <tr>
+            <!-- Logo -->
+            <td valign="middle" style="padding:0; white-space:nowrap;">
+              <img src="/images/odp-image.gif"
+                   width="126" height = "23" alt="OneDayPrint"
+                   style="display:block; border:0; height:auto; margin-top:-10px;">
+            </td>
+
+            <!-- gap -->
+            <td style="width:8px; font-size:0; line-height:0;">&nbsp;</td>
+
+            <!-- Icons -->
+            <td valign="middle" style="padding:0;">
+              <a href="https://www.facebook.com/onedayprint" target="_blank" rel="noopener noreferrer"
+                style="display:inline-block; text-decoration:none;">
+                <img src="/images/unnamedfacebook.jpg"
+                    width="20" height="20" top="-23" alt="Facebook"
+                    style="display:block; border:0;">
+              </a>
+              <a href="https://www.instagram.com/onedayprintsg/" target="_blank" rel="noopener noreferrer"
+                style="display:inline-block; text-decoration:none;">
+                <img src="/images/unnamed.jpg"
+                    width="20" height="20" top="-23" alt="Instagram"
+                    style="display:block; border:0;">
+              </a>
+            </td>
+          </tr>
+        </table>
+      </td>
+
+      <td valign="top" style="width:1px; background:#999;"></td>
+
+      <td valign="top" style="padding:0 0 0 12px; font-size:13px;">
+        <div>445 Tampines St 42, #01-08, S(520445)</div>
+        <div>Mon to Sat 9:30am to 7:00pm | <a href="tel:+6567882039" style="color:#000; text-decoration:none;">6788 2039</a></div>
+        <div>Strictly no walk-in orders until further notice</div>
+      </td>
+    </tr>
+  </table>
+</div>

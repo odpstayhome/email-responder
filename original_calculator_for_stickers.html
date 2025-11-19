@@ -1,0 +1,538 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
+<style>
+.slidecontainer {
+  width: 100%; /* Width of the outside container */
+}
+
+/* The slider itself */
+.slider {
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  width: 100%; /* Full-width */
+  height: 15px;
+  border-radius: 5px;  
+  background: #d3d3d3; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px;
+  border-radius: 50%; 
+  background: #4CAF50; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+input[type='radio'] { 
+  height: 30px;
+  width: 30px;
+  vertical-align: middle;
+}
+</style>
+
+<script language="JavaScript">
+function calculate()
+{
+// Original data
+	var paperSize = "A4";
+	var bleed = 3;
+	var widthEntry = parseInt(document.getElementById('width').value, 10);
+	var heightEntry = parseInt(document.getElementById('height').value, 10);
+	var shape = document.getElementById('shape');
+	var mat = document.getElementById('material');
+	var outputText = document.getElementById('outputBox'); // Important : Used to output the main texts
+	var subPfeeCounter = 0; // Encounter a +, processing fee counter +1. Encounter a 'x' or 'X' or '*', take the number before it and add to processing fee counter
+	outputText.value = ""; // Flush contents
+
+	//make input into evaluable format first
+	var qtyString = document.getElementById('quantity').value;
+	qtyString = qtyString.replace(/ /g,'');//remove all white spaces
+	qtyString = qtyString.replace(/[xX]/g,'*');//replace all 'x' with '*' regardless of capital or not
+
+	var segment = getSegment(qtyString);
+	var extraProcessingCount = countTotalProcessingFee(segment);
+	var displayArray = replaceArrayCharacter(segment,/[*]/g,' X ');
+	var qty = parseInt( eval(qtyString) , 10) ;
+
+	doTheRest();
+	
+		// where the real stuff begins
+		function doTheRest()
+		{
+			var displayQuantity = getDisplayQuantityFormatted(displayArray);
+			var w = widthEntry;
+			var h = heightEntry;
+
+		// New data (Hidden ones)
+			var oneSheetPrice = 0;
+			var fullW = 287;
+			var fullH = 200;
+			var cut1stroke = 13;
+			var pFee = 780;
+			var subsequentProcessing = 300;
+			//var unitPrice = 0;
+
+		// Output 1st paragraph MINUS 'Kiss-cut on <papersize> sheets'
+			outputText.value += "Quotation for " + displayQuantity + " pcs " + shape.value + " stickers :\n";
+			outputText.value += "- Material : " + mat[mat.selectedIndex].value + "\n";
+			if (shape[shape.selectedIndex].value == "Round" ) { outputText.value += "- Shape : Circular\n"; outputText.value += "- Size : " + widthEntry + "mm diameter\n";}
+				else { outputText.value += "- Shape : " + shape[shape.selectedIndex].text + "\n"; outputText.value += "- Size : " + widthEntry + "mm (W) X " + heightEntry + "mm (H)\n";}
+
+			// HARDCODE SPECIAL SIZES
+			if (w <= 20) w = 20;
+			if (h <= 20) h = 20;
+			if (w == 90) w = 89;
+			if (h == 90) h = 89;
+
+		// Set i) Price per sheet for A4
+			oneSheetPrice = getOneSheetPrice(mat);
+		// Set i) Processing fee ii) Price per stroke iii) Max size of A4 template
+			if (shape[shape.selectedIndex].text == "Round" 
+				|| shape[shape.selectedIndex].text == "Rectangle (Rounded corners)"
+				|| shape[shape.selectedIndex].text == "Square (Rounded corners)"
+				|| shape[shape.selectedIndex].text == "Oval") 
+			{ 
+				pFee = 980; 
+				cut1stroke = 19; 
+				fullW = 277; 
+				fullH = 190; 
+			}
+			else if (shape[shape.selectedIndex].value == "Custom-shape") 
+			{ 
+				pFee = 1200; 
+				cut1stroke = 23; 
+				fullW = 277; 
+				fullH = 190; 
+			}
+
+		// Start calculation	
+			var wStrokes1 = 0;
+				if (pFee == 780) {wStrokes1 = Math.floor(fullW/w);}
+				else { w = w + bleed; wStrokes1 = Math.floor(fullW/w); }
+			var hStrokes1 = 0;
+				if (pFee == 780) {hStrokes1 = Math.floor(fullH/h);}
+				else { h = h + bleed; hStrokes1 = Math.floor(fullH/h); }
+			var totalStrokes1 = (wStrokes1 + hStrokes1);
+			var totalStrokesCosts1 = (totalStrokes1+2) * cut1stroke;
+			var pcsPerSheet1 = (wStrokes1 * hStrokes1);
+			var unitPrice1 = (oneSheetPrice + totalStrokesCosts1)/pcsPerSheet1;
+//			unitPrice1 = unitPrice1.toFixed(3);
+unitPrice1 = Math.round(unitPrice1*10)/10;
+
+
+			var wStrokes2 = 0;
+				if (pFee == 780) {wStrokes2 = Math.floor(fullW/h);}
+				else { wStrokes2 = Math.floor(fullW/h); }
+			var hStrokes2 = 0;
+				if (pFee == 780) {hStrokes2 = Math.floor(fullH/w);}
+				else { hStrokes2 = Math.floor(fullH/w); }
+			var totalStrokes2 = (wStrokes2 + hStrokes2);
+			var totalStrokesCosts2 = (totalStrokes2+2) * cut1stroke;
+			var pcsPerSheet2 = (wStrokes2 * hStrokes2);
+			var unitPrice2 = (oneSheetPrice + totalStrokesCosts2)/pcsPerSheet2;
+//			unitPrice2 = unitPrice2.toFixed(3);
+unitPrice2 = Math.round(unitPrice2*10)/10;
+			
+			if (isFinite(unitPrice1) == false && isFinite(unitPrice2) == false)	{paperSize = "A3";}
+			if (paperSize == "A3")
+			{
+				if (mat[mat.selectedIndex].text == "Mirrorkote") { oneSheetPrice = 220; }
+				if (mat[mat.selectedIndex].text == "Synthetic") { oneSheetPrice = 460; }
+				if (mat[mat.selectedIndex].text == "Synthetic (Transparent)") { oneSheetPrice = 460; }
+				if (mat[mat.selectedIndex].text == "PVC (White-base)") { oneSheetPrice = 760; }
+				if (mat[mat.selectedIndex].text == "PVC (Transparent)") { oneSheetPrice = 760; }
+				if (mat[mat.selectedIndex].text == "Window Sticker (White-base)") { oneSheetPrice = 1460; }
+
+				if (mat[mat.selectedIndex].text == "Removable Synthetic") { oneSheetPrice = 760; }
+				if (mat[mat.selectedIndex].text == "Removable PVC (White-base)") { oneSheetPrice = 1060; }
+				if (mat[mat.selectedIndex].text == "Removable PVC (Transparent)") { oneSheetPrice = 1060; }
+				if (mat[mat.selectedIndex].text == "Silver Synthetic") { oneSheetPrice = 760; }
+				if (mat[mat.selectedIndex].text == "Silver PVC") { oneSheetPrice = 1060; }
+
+				if (mat[mat.selectedIndex].text == "Hologram Synthetic") { oneSheetPrice = 760; }
+				if (mat[mat.selectedIndex].text == "Hologram PVC") { oneSheetPrice = 1060; }
+				if (mat[mat.selectedIndex].text == "Floor Sticker") { oneSheetPrice = 1460; }
+
+				pFee = 780; 
+				cut1stroke = 26; 
+				fullW = 277; 
+				fullH = 392;
+				if (shape[shape.selectedIndex].text == "Round" 
+				|| shape[shape.selectedIndex].text == "Rectangle (Rounded corners)"
+				|| shape[shape.selectedIndex].text == "Square (Rounded corners)"
+				|| shape[shape.selectedIndex].text == "Oval") { pFee = 980; cut1stroke = 38; }
+				else if (shape[shape.selectedIndex].value == "Custom-shape") { pFee = 1200; cut1stroke = 46; }
+				
+				var wStrokes1 = 0; // Ugly hardcode. Who cares ~
+					if (pFee == 780) {wStrokes1 = Math.floor(fullW/w);}
+					else { wStrokes1 = Math.floor(fullW/w); }
+				var hStrokes1 = 0;
+					if (pFee == 780) {hStrokes1 = Math.floor(fullH/h);}
+					else { hStrokes1 = Math.floor(fullH/h); }
+				var totalStrokes1 = (wStrokes1 + hStrokes1);
+				var totalStrokesCosts1 = (totalStrokes1+2) * cut1stroke;
+				var pcsPerSheet1 = (wStrokes1 * hStrokes1);
+				var unitPrice1 = (oneSheetPrice + totalStrokesCosts1)/pcsPerSheet1;
+//				unitPrice1 = unitPrice1.toFixed(3);
+unitPrice1 = Math.round(unitPrice1*10)/10;
+				
+				var wStrokes2 = 0;
+					if (pFee == 780) {wStrokes2 = Math.floor(fullW/h);}
+					else { wStrokes2 = Math.floor(fullW/h); }
+				var hStrokes2 = 0;
+					if (pFee == 780) {hStrokes2 = Math.floor(fullH/w);}
+					else { hStrokes2 = Math.floor(fullH/w); }
+				var totalStrokes2 = (wStrokes2 + hStrokes2);
+				var totalStrokesCosts2 = (totalStrokes2+2) * cut1stroke;
+				var pcsPerSheet2 = (wStrokes2 * hStrokes2);
+				var unitPrice2 = (oneSheetPrice + totalStrokesCosts2)/pcsPerSheet2;
+//				unitPrice2 = unitPrice2.toFixed(3);
+unitPrice2 = Math.round(unitPrice2*10)/10;
+			}
+
+			var unitPrice = Math.min(unitPrice1, unitPrice2); 
+			var totalCosts = pFee + (extraProcessingCount * subsequentProcessing) + (unitPrice * qty);
+
+//			unitPrice = + (+(unitPrice) + "e-2");
+unitPrice = + (+(unitPrice) + "e+1");
+unitPrice = unitPrice.toString();
+if (unitPrice.length == 3)
+	unitPrice = "0."+unitPrice;
+else if (unitPrice.length == 1)
+	unitPrice = "0.00"+unitPrice;
+else if (unitPrice.length == 2)
+	unitPrice = "0.0"+unitPrice;
+else
+	unitPrice = unitPrice.substring(0,unitPrice.length-3) + '.' + unitPrice.substring(unitPrice.length-3);
+			totalCosts = + (Math.floor(totalCosts) + "e-2");
+			totalCosts = totalCosts.toFixed(2);
+//			pFee = + (+(pFee) + "e-2");
+pFee = pFee.toString();
+pFee = pFee.substring(0,pFee.length-2) + '.' + pFee.substring(pFee.length-2);
+
+
+			subsequentProcessing = + (+(subsequentProcessing) + "e-2");
+			
+//			unitPrice = unitPrice.toFixed(Math.max(2, (unitPrice.toString().split('.')[1] || []).length));
+			
+			outputText.value += "- Kiss-cut on "  + paperSize +  " sheets\n\n";
+			
+			if (totalCosts == 35.00 || totalCosts > 35.00)
+			{
+				outputText.value += "Processing fee $" + pFee ;
+				if (extraProcessingCount>0)
+				{
+					outputText.value += " + $" + subsequentProcessing + " X " + extraProcessingCount;
+				}
+				outputText.value += " + ($" + unitPrice + "/pcs X " + qty + " pcs) = $" + totalCosts;
+			}
+			else if (totalCosts < 35.00)
+			{
+				outputText.value += "Processing fee $" + pFee;
+				if (extraProcessingCount>0)
+				{
+					outputText.value += " + $" + subsequentProcessing + " X " + extraProcessingCount;
+				}
+				outputText.value += " + $10 surcharge for items <$35 + ($" + unitPrice + "/pcs X " + qty + " pcs) = $" +	(parseFloat(totalCosts) + 10).toFixed(2);
+			}
+		}
+}
+	
+function generateEmail() // Severely hardcoded... better than nothing lah :D
+{
+	// calculate();
+	var oneLine = "";
+	var absorbOutputBox = document.getElementById('outputBox').value.split('\n');
+	
+	oneLine += "<font face='Arial' size=" + document.getElementById('fontSize').value + ">";
+	for (var i = 0; i < absorbOutputBox.length; i++)
+	{
+		if (i == 0)
+		{
+			var twoParts = absorbOutputBox[i].replace("Quotation for ", "");
+			var partsArray = twoParts.split(":");
+			var part1 = partsArray[0];
+			var part2 = partsArray[1];
+			
+			if (document.getElementById('Option').value == "Quotation for ")
+				oneLine += "<b><u>" + document.getElementById('Option').value + part1.slice(0, -1) + "</u> :" + part2 + "</b><br>";
+			else
+				oneLine += "<b>" + document.getElementById('Option').value + "<u>" + part1.slice(0, -1) + "</u> :" + part2 + "</b><br>";
+		}
+		else if (i == 1 || i == 4)
+		{
+			oneLine += "<font color='#0000ff'>" + absorbOutputBox[i] + "</font><br>";
+		}
+		else if (i == 2 || i == 3)
+		{
+			var twoParts = absorbOutputBox[i];
+			var partsArray = twoParts.split(":");
+			var part1 = partsArray[0];
+			var part2 = partsArray[1];
+
+			oneLine +=  "<font color='#0000ff'>" + part1 + ":" + "<b>" + part2 + "</b></font><br>";
+		}
+		else if (i == 6 && document.getElementById('Option').value != "Quotation for ")
+		{
+			oneLine += document.getElementById('Option').value + absorbOutputBox[i] + "<br>";
+		}
+		else if (absorbOutputBox[i] == "" && document.getElementById('Option').value != "Quotation for ") // Name generator
+		{
+			var qty = parseInt(document.getElementById('quantity').value, 10);
+			var width = parseInt(document.getElementById('width').value, 10);
+			var height = parseInt(document.getElementById('height').value, 10);
+			var shape = document.getElementById('shape')[document.getElementById('shape').selectedIndex].text;
+			var size = width + "x" + height + "mm_";
+				if (shape == "Round") size = width + "mm_";
+					else if (shape == "Rectangle (Rounded corners)" || shape == "Square (Rounded corners)") size = 
+					width + "x" + height + "r" + parseFloat(document.getElementById('radius').value) + "mm_";
+			var material = document.getElementById('material')[document.getElementById('material').selectedIndex].text;
+					
+					if (material == "Mirrorkote") material = "Mirrorkote_";
+					else if (material == "Synthetic") material = "Synthetic_";
+					else if (material == "Synthetic (Transparent)") material = "TranspSynthetic_";
+					else if (material == "PVC (White-base)") material = "PVC(White)_";
+					else if (material == "PVC (Transparent)") material = "PVC(Transp)_";
+					else if (material == "Window Sticker (White-base)") material = "WindowPVC_";
+					
+					else if (material == "Removable Synthetic") material = "RmSynthetic_";
+					else if (material == "Removable PVC (White-base)") material = "RmPVC(White)_";
+					else if (material == "Removable PVC (Transparent)") material = "RmPVC(Transp)_";
+					else if (material == "Removable Synthetic") material = "RmSynthetic_";
+					else if (material == "Silver Synthetic") material = "SilverSynthetic_";
+					else if (material == "Silver PVC") material = "SilverPVC_";
+					
+					else if (material == "Hologram Synthetic") material = "HoloSynthetic_";
+					else if (material == "Hologram PVC") material = "HoloPVC_";
+					else if (material == "Floor Sticker") material = "FloorPVC_";
+					else material = material + "_";
+					
+			if (shape == "Rectangle (Straight corners)" || shape == "Rectangle (Rounded corners)") shape = "Rect";
+				else if (shape == "Square (Straight corners)" || shape == "Square (Rounded corners)") shape = "Square";
+				else if (shape == "Custom-shape") shape = "Custom";
+			var multipleArtworks = ""; // Will edit soon!
+			
+			var fileName = qty + "pcs_" + size + material + shape + multipleArtworks + ".jpg";
+			
+			if (document.getElementById('Option').value == "i) " || document.getElementById('Option').value == "")
+				oneLine += "<font color='#008000'>- <b>Final artwork : " + fileName + "</b></font><br><br><b>2) Price</b><br><br>";
+			else
+				oneLine += "<font color='#008000'>- <b>Final artwork : " + fileName + "</b></font><br><br>";
+		}
+		else
+		{
+			oneLine += absorbOutputBox[i] + "<br>";
+		}
+	}
+	
+	var newWindow = window.open("", "", "width=960, height=540, top=270, left=480"); // Ran
+	// var newWindow = window.open("", "", "width=720, height=450, top=225, left=360"); // Hazel
+	
+	newWindow.document.write(oneLine);
+}
+
+function getSegment(qtyString){
+	return qtyString.split('+');
+}
+
+function replaceArrayCharacter(segment,toReplace,replacementCharacter){
+	var result = segment;
+	for (var index = 0; index <segment.length ; ++index)
+	{
+		result[index] = segment[index].replace(toReplace,replacementCharacter);
+	}
+	return result;
+}
+
+function getOneSheetPrice(mat){
+	if (mat[mat.selectedIndex].text == "Mirrorkote") return 110;
+	if (mat[mat.selectedIndex].text == "Synthetic") return 230;
+	if (mat[mat.selectedIndex].text == "Synthetic (Transparent)") return 230;
+	if (mat[mat.selectedIndex].text == "PVC (White-base)") return 380;
+	if (mat[mat.selectedIndex].text == "PVC (Transparent)") return 380;
+	if (mat[mat.selectedIndex].text == "Window Sticker (White-base)") return 730;
+	
+	if (mat[mat.selectedIndex].text == "Removable Synthetic") return 380;
+	if (mat[mat.selectedIndex].text == "Removable PVC (White-base)") return 530;
+	if (mat[mat.selectedIndex].text == "Removable PVC (Transparent)") return 530;
+	if (mat[mat.selectedIndex].text == "Silver Synthetic") return 380;
+	if (mat[mat.selectedIndex].text == "Silver PVC") return 530;
+	
+	if (mat[mat.selectedIndex].text == "Hologram Synthetic") return 380;
+	if (mat[mat.selectedIndex].text == "Hologram PVC") return 530;
+	if (mat[mat.selectedIndex].text == "Floor Sticker") return 730;
+}
+
+function countTotalProcessingFee(displaySegment){
+	var extraProcessingFeeCount = 0 ;
+	for (var index = 0; index < displaySegment.length ; ++index)
+	{
+		var checker = '*';
+		if (displaySegment[index].indexOf(checker) == -1){
+			extraProcessingFeeCount++;
+		}else {
+			var temp = displaySegment[index].split('*');
+			extraProcessingFeeCount = extraProcessingFeeCount + parseInt(temp[0],10);
+		}
+	}
+	return extraProcessingFeeCount-1;
+}
+
+function getDisplayQuantityFormatted(displayArray){
+	var output = '';
+	for (var index = 0; index < displayArray.length ; ++index){
+		if (index >0)
+			output += ' + ';
+		output += displayArray[index];
+	}
+	return output;
+}
+
+</script>
+<title>ODP Sticker Calculate v1.3.5</title>
+</head><body><center><form>
+ <table><tbody><tr><td><font size="8" face="Arial"></font>
+  <p align="right">
+  <font size="8" face="Arial">
+
+Corner radius R(mm): 
+<input type="text" id="radius" placeholder="0" style="font-size: 45; font-family:Arial" value="3" size="3" maxlength="3"><br><br>
+
+Width (mm) : <input type="text" id="width" placeholder="0" style="font-size: 45; font-family:Arial"><br><br>
+Height (mm) : <input type="text" id="height" style="font-size: 45; font-family:Arial" placeholder="0"><br><br>
+Quantity : <input type="text" id="quantity" placeholder="0" style="font-size: 45; font-family:Arial"><br><br>
+
+<!-- </font><div class="slidecontainer">
+  <font size="8" face="Arial"><input type="range" min="0" max="5000" value="0" class="slider" id="qtyRange">
+( Slider only works for 0 - 5k range )
+</font></div>
+<div align="right"><font size="8" face="Arial"><br>-->
+
+  Shape : 
+  <select id="shape" style="font-size: 45; font-family:Arial">
+    <option value="Round" selected="">Round</option>
+    <option value="Rectangular">Rectangle (Straight corners)</option>
+    <option value="Rectangular">Rectangle (Rounded corners)</option>
+    <option value="Square">Square (Straight corners)</option>
+    <option value="Square">Square (Rounded corners)</option>
+    <option value="Oval">Oval</option>
+    <option value="Custom-shape">Custom-shape</option>
+  </select>
+  <br><br>
+  
+  Material : 
+  <!--input type="radio" id="mirrorkote" name="material" value="Mirrorkote (Gloss coated paper)"><label for="mirrorkote">Mirrorkote</label>
+<input type="radio" id="synthetic" name="material" value="Synthetic (PP, Waterproof)"><label for="mirrorkote">Synthetic</label><br/>
+<input type="radio" id="whitepvc" name="material" value="White PVC (Laminated, weatherproof)"><label for="mirrorkote">PVC (White-base)</label>
+<input type="radio" id="transpvc" name="material" value="Transparent PVC (Laminated, weatherproof)"><label for="mirrorkote">PVC (Transparent)</label><br/>
+<input type="radio" id="window" name="material" value="White PVC (Laminated, weatherproof) + Removable adhesive + Reverse printing"><label for="mirrorkote">Window Sticker (White-base)</label>
+<br-->
+  
+  <select id="material" style="font-size: 45; font-family:Arial">
+    <option value="Mirrorkote (Off-white glossy paper)" selected="">Mirrorkote</option>
+    <option value="Synthetic (PP, Waterproof)">Synthetic</option>
+    <option value="Transparent Synthetic (PP, Waterproof)">Synthetic (Transparent)</option>
+    <option value="White PVC (Gloss laminated, weatherproof)">PVC (White-base)</option>
+    <option value="Transparent PVC (Gloss laminated, weatherproof)">PVC (Transparent)</option>
+    <option value="White PVC (Gloss laminated, weatherproof) + Removable adhesive + Reverse printing">Window Sticker (White-base)</option>
+    <option value="Synthetic (PP, Waterproof) + Removable adhesive">Removable Synthetic</option>
+    <option value="White PVC (Gloss laminated, weatherproof) + Removable adhesive">Removable PVC (White-base)</option>
+    <option value="Transparent PVC (Gloss laminated, weatherproof) + Removable adhesive">Removable PVC (Transparent)</option>
+    <option value="Silver Synthetic">Silver Synthetic</option>
+    <option value="Silver PVC (Gloss laminated, weatherproof)">Silver PVC</option>
+    
+    <option value="Hologram Synthetic">Hologram Synthetic</option>
+    <option value="Hologram PVC (Gloss laminated, weatherproof)">Hologram PVC</option>
+    <option value="Floor Sticker (Anti-slip rough PVC)">Floor Sticker</option>
+  </select>
+  <br><br>
+  
+</font></div></p></td></tr></tbody></table>
+
+<input type="button" value=" Calculate " onClick="calculate();" style="font-size: 60; font-family:Arial">
+<input type="button" value=" Find Min " onClick="calculateMin();" style="font-size: 60; font-family:Arial">
+<br><br>
+
+<textarea id="outputBox" rows="11" cols="70" style="font-size: 20">
+Version 1.? update (Coming soon) :
+- 1-click button to find out minimum quantity for $35
+- Die-cut, Individual cut
+
+Version 1.3.6 update (060723, Lam) :
+- Removed Slider
+- Updated surcharge from $5 to $10
+- Multiple formating fixes
+
+Version 1.3.5 update (230221) :
+- Added slider for qty 0-5k
+
+Version 1.1 + 1.2 + 1.3 + 1.3.4 update :
+- Auto calc $5 surcharge
+- Auto bold, highlight and colour for payment email
+- Auto calc multi artworks (Type '30+30+30', '6x40' etc in qty)
+- Wrong price rounding fixed
+</textarea><br><br>
+
+<select id="Option" style="font-size: 24; font-family:Arial">
+<option value="Quotation for " selected="">Quotation</option>
+<option value="">0. n/a)</option>
+<option value="i) ">1. i)</option>
+<option value="ii) ">2. ii)</option>
+<option value="iii) ">3. iii)</option>
+<option value="iv) ">4. iv)</option>
+<option value="v) ">5. v)</option>
+<option value="vi) ">6. vi)</option></select>
+
+	<input type="button" value=" Generate Email Paragraph " onClick="generateEmail();" style="font-size: 24; font-family:Arial">
+
+<select id="fontSize" style="font-size: 24; font-family:Arial">
+<option value="1">Font size 1</option>
+<option value="2" selected="">Font size 2</option>
+<option value="2.5">Font size 2.5</option>
+<option value="3">Font size 3</option>
+<option value="3.5">Font size 3.5</option>
+<option value="4">Font size 4</option>
+<option value="5">Font size 5</option></select><br><br>
+
+</form></center>
+
+<script language="JavaScript">
+// slider start
+var slider = document.getElementById("qtyRange");
+var output = document.getElementById("quantity");
+// output.value  = slider.value; // Display the default slider value. Lam: No longer needed.
+
+// Update the current slider value (each time you drag the slider handle)
+slider.oninput = function() {
+  output.value = this.value;
+}
+
+output.onchange = function(){
+	slider.value  = this.value;
+}
+// slider end
+</script>
+
+</body></html>
